@@ -162,3 +162,80 @@ h1{font-size:clamp(42px,10.8vw,62px);line-height:1.13}
 .look-cta{font-size:12px}
 .hero-actions .btn{flex:auto;width:100%}
 }
+
+/* Stronger brand gold and uncluttered touch layouts. */
+:root{
+--ink:#d2b47b;--wine:#dabc83;--muted:#c2ae87;
+--line:rgba(210,180,123,.26);--white:#ead4aa;
+}
+h1 em,h2 em{color:#dbbc82}
+.btn-dark,.whatsapp-float{background:#d0ad6d;border-color:#d8b979;color:#161109}
+.btn-dark:hover,.whatsapp-float:hover{background:#dfc18a;border-color:#dfc18a}
+.btn-line{border-color:rgba(210,180,123,.55)}
+.playback-toggle{color:#ead4aa;border-color:rgba(210,180,123,.5)}
+a,button{-webkit-tap-highlight-color:rgba(210,180,123,.16)}
+@media(max-width:980px){
+.nav{position:sticky;top:0;z-index:31;height:78px}
+.nav-actions{min-width:0}
+.menu-btn{min-width:70px;min-height:46px;padding:10px 8px;font-size:12px}
+.mobile-menu{inset:0;z-index:30;padding:128px 24px 32px;gap:10px;overflow-y:auto;overscroll-behavior:contain}
+.mobile-menu a{display:block;min-height:52px;padding:9px 0;line-height:1.25}
+.mobile-menu a:last-child{font-size:20px;margin-top:8px;border-top:1px solid var(--line);padding-top:22px}
+.whatsapp-float{position:static;width:fit-content;max-width:calc(100% - 40px);margin:0 auto 28px;box-shadow:none;transform:none}
+.footer-bottom{padding-right:0}
+}
+@media(max-width:620px){
+.announcement{height:auto;min-height:34px;gap:10px;padding:8px 18px;font-size:8px;letter-spacing:.09em;line-height:1.5}
+.announcement span:first-child{flex-shrink:0}
+.announcement a{text-align:right;white-space:normal}
+.nav{padding:0 18px}
+.brand img{width:60px;height:60px}
+.hero-copy{padding:36px 20px 30px;gap:24px}
+h1{font-size:clamp(36px,10.3vw,54px);line-height:1.14;letter-spacing:-.045em;margin:20px 0 22px}
+.hero-copy p{font-size:14px;line-height:1.8}
+.hero-actions{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;margin-top:24px}
+.btn{min-height:52px;padding:14px 18px;font-size:11px;line-height:1.5;letter-spacing:.08em;text-align:center;white-space:normal}
+.hero-actions .btn,.contact-actions .btn{width:100%;min-width:0}
+.hero-copy .shopping-note{font-size:12px;line-height:1.7}
+.hero-foot{font-size:8px;letter-spacing:.09em;gap:14px;line-height:1.5;padding-top:20px}
+.hero-media{padding:20px 20px 44px}
+.hero-media>.playback-toggle{right:28px;bottom:52px}
+.playback-toggle{min-height:44px;min-width:78px;padding:10px 14px;line-height:1.4}
+.media-label{left:20px;right:20px;bottom:14px;letter-spacing:.1em}
+.campaign-image{padding:40px 20px 0}
+.campaign-copy{padding:30px 20px 48px}
+.campaign h2,.looks-head h2,.contact h2{font-size:clamp(32px,8.6vw,44px);line-height:1.17;letter-spacing:-.04em;margin:18px 0 22px;overflow-wrap:break-word}
+.campaign-copy p,.looks-head>p,.contact p{font-size:14px;line-height:1.8}
+.campaign-cta{width:100%;margin-top:20px}
+.section-pad{padding:48px 20px}
+.looks-head>p{margin-top:20px;margin-bottom:0}
+.look-story{padding:0 20px 48px;gap:40px}
+.look-panel{min-width:0;gap:16px}
+.look-copy{grid-template-columns:minmax(0,1fr);gap:8px}
+.look-copy>span{grid-row:auto;font-size:10px;letter-spacing:.1em}
+.look-copy strong{font-size:23px;line-height:1.35}
+.look-copy p{font-size:13px;line-height:1.75}
+.look-cta{grid-column:1;min-height:52px;padding:15px 0;font-size:13px;margin-top:8px}
+.contact{gap:22px}
+.contact-actions{gap:18px;margin-top:24px}
+.contact-actions .text-link{display:flex;align-items:center;min-height:44px;margin-top:0;font-size:12px}
+.store-footer{padding:36px 20px 24px;gap:30px}
+.footer-identity{display:flex;gap:16px;align-items:center;min-width:0}
+.footer-brand{flex:none}
+.footer-brand img{width:80px;height:80px}
+.footer-identity p{min-width:0;font-size:12px;line-height:1.75}
+.store-footer h3{font-size:16px;margin-bottom:18px;line-height:1.5}
+.footer-contact>a{min-height:58px;justify-content:center;gap:7px;margin-bottom:14px;max-width:100%}
+.footer-contact strong{font-size:16px;overflow-wrap:anywhere}
+.footer-label{font-size:10px}
+.footer-location .text-link{display:flex;align-items:center;min-height:48px;margin-top:10px;font-size:12px}
+.footer-location .btn{margin-top:16px}
+.footer-bottom{font-size:10px;line-height:1.7}
+.whatsapp-float{display:flex;justify-content:center;width:calc(100% - 40px);max-width:400px;min-height:52px;margin:0 auto 24px;font-size:13px;border-radius:4px}
+}
+@media(max-width:350px){
+.announcement{font-size:7px;padding-left:16px;padding-right:16px;gap:8px}
+.hero-foot{flex-direction:column;gap:6px}
+.footer-identity{align-items:flex-start}
+.footer-brand img{width:68px;height:68px}
+}
