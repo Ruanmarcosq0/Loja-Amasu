@@ -19,6 +19,7 @@ document.addEventListener('keydown', event => {
 });
 matchMedia('(min-width:981px)').addEventListener('change', event => { if (event.matches) setMenu(false); });
 
+const playbackControllers = [];
 document.querySelectorAll('video').forEach((video, index) => {
   video.muted = true;
   video.defaultMuted = true;
@@ -26,27 +27,71 @@ document.querySelectorAll('video').forEach((video, index) => {
   video.autoplay = true;
   video.loop = true;
   video.playsInline = true;
+  video.setAttribute('muted', '');
+  video.setAttribute('playsinline', '');
+  video.setAttribute('webkit-playsinline', '');
   const button = document.createElement('button');
   button.type = 'button';
   button.className = 'playback-toggle';
   button.setAttribute('aria-label', 'Pausar vídeo do look ' + (index + 1));
-  button.textContent = 'Pausar';
+  button.textContent = 'Reproduzir';
   video.parentElement.append(button);
   let userPaused = false;
+  let pendingPlay = false;
   const sync = () => {
     button.textContent = video.paused ? 'Reproduzir' : 'Pausar';
     button.setAttribute('aria-label', (video.paused ? 'Reproduzir' : 'Pausar') + ' vídeo do look ' + (index + 1));
   };
   button.addEventListener('click', () => {
     userPaused = !video.paused;
-    if (video.paused) video.play().catch(sync);
+    if (video.paused) start();
     else video.pause();
   });
   video.addEventListener('play', sync);
   video.addEventListener('pause', sync);
   video.addEventListener('volumechange', () => { if (!video.muted) video.muted = true; });
-  const start = () => { if (!userPaused) video.play().catch(sync); };
-  video.addEventListener('loadeddata', start, {once:true});
+  const start = () => {
+    if (userPaused || pendingPlay || document.hidden || !video.paused) return;
+    video.muted = true;
+    video.defaultMuted = true;
+    video.volume = 0;
+    pendingPlay = true;
+    Promise.resolve(video.play()).catch(() => {
+      // Keep an honest, usable play control when a browser blocks autoplay.
+      sync();
+    }).finally(() => { pendingPlay = false; sync(); });
+  };
+  playbackControllers.push({ video, start });
+  ['loadeddata', 'canplay', 'canplaythrough', 'suspend'].forEach(event => video.addEventListener(event, start));
+  video.addEventListener('pause', () => { if (!userPaused) start(); });
+  video.addEventListener('ended', () => {
+    if (!userPaused) { video.currentTime = 0; start(); }
+  });
+  if ('IntersectionObserver' in window) {
+    const visibility = new IntersectionObserver(entries => {
+      if (entries.some(entry => entry.isIntersecting)) start();
+    }, { threshold: 0.05 });
+    visibility.observe(video);
+  }
+  sync();
   start();
 });
+const resumeVideos = () => playbackControllers.forEach(({ start }) => start());
+document.addEventListener('visibilitychange', () => { if (!document.hidden) resumeVideos(); });
+window.addEventListener('pageshow', resumeVideos);
+window.addEventListener('focus', resumeVideos);
+// iOS and battery-saving browsers can require a real interaction to begin.
+['pointerdown', 'touchend', 'keydown'].forEach(event => {
+  document.addEventListener(event, event => {
+    if (event.target instanceof Element && event.target.closest('.playback-toggle')) return;
+    resumeVideos();
+  }, { passive: true });
+});
+window.setInterval(() => {
+  if (document.hidden) return;
+  playbackControllers.forEach(({video, start}) => {
+    const rect = video.getBoundingClientRect();
+    if (rect.bottom > 0 && rect.top < innerHeight && video.paused) start();
+  });
+}, 2000);
 document.getElementById('year').textContent = new Date().getFullYear();
