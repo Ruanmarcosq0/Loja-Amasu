@@ -1,40 +1,52 @@
-const revealEls = document.querySelectorAll('.reveal');
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach((entry) => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('visible');
-      observer.unobserve(entry.target);
-    }
-  });
-}, { threshold: 0.12, rootMargin: '0px 0px -5% 0px' });
-revealEls.forEach((el) => observer.observe(el));
-
-const menuBtn = document.querySelector('.menu-btn');
-const mobileMenu = document.querySelector('.mobile-menu');
-const closeMenu = () => {
-  mobileMenu?.classList.remove('open');
-  mobileMenu?.setAttribute('aria-hidden', 'true');
-  menuBtn?.setAttribute('aria-expanded', 'false');
-  document.body.classList.remove('menu-open');
-};
-menuBtn?.addEventListener('click', () => {
-  const open = !mobileMenu.classList.contains('open');
-  mobileMenu.classList.toggle('open', open);
-  mobileMenu.setAttribute('aria-hidden', String(!open));
-  menuBtn.setAttribute('aria-expanded', String(open));
+const menuButton = document.querySelector('.menu-btn');
+const menu = document.querySelector('.mobile-menu');
+function setMenu(open) {
+  menu.classList.toggle('open', open);
+  menu.inert = !open;
+  menu.setAttribute('aria-hidden', String(!open));
+  menuButton.setAttribute('aria-expanded', String(open));
+  menuButton.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
+  menuButton.textContent = open ? 'Fechar' : 'Menu';
   document.body.classList.toggle('menu-open', open);
+}
+menuButton.addEventListener('click', () => setMenu(menuButton.getAttribute('aria-expanded') !== 'true'));
+menu.querySelectorAll('a').forEach(link => link.addEventListener('click', () => setMenu(false)));
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && menuButton.getAttribute('aria-expanded') === 'true') {
+    setMenu(false);
+    menuButton.focus();
+  }
 });
-mobileMenu?.querySelectorAll('a').forEach((link) => link.addEventListener('click', closeMenu));
+matchMedia('(min-width:981px)').addEventListener('change', event => { if (event.matches) setMenu(false); });
 
-document.querySelectorAll('video').forEach((video) => {
+document.querySelectorAll('video').forEach((video, index) => {
   video.muted = true;
   video.defaultMuted = true;
   video.volume = 0;
-  video.setAttribute('muted', '');
-  video.setAttribute('playsinline', '');
-  video.addEventListener('loadedmetadata', () => {
-    if (video.paused) video.play().catch(() => {});
-  }, { once: true });
+  video.autoplay = true;
+  video.loop = true;
+  video.playsInline = true;
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'playback-toggle';
+  button.setAttribute('aria-label', 'Pausar vídeo do look ' + (index + 1));
+  button.textContent = 'Pausar';
+  video.parentElement.append(button);
+  let userPaused = false;
+  const sync = () => {
+    button.textContent = video.paused ? 'Reproduzir' : 'Pausar';
+    button.setAttribute('aria-label', (video.paused ? 'Reproduzir' : 'Pausar') + ' vídeo do look ' + (index + 1));
+  };
+  button.addEventListener('click', () => {
+    userPaused = !video.paused;
+    if (video.paused) video.play().catch(sync);
+    else video.pause();
+  });
+  video.addEventListener('play', sync);
+  video.addEventListener('pause', sync);
+  video.addEventListener('volumechange', () => { if (!video.muted) video.muted = true; });
+  const start = () => { if (!userPaused) video.play().catch(sync); };
+  video.addEventListener('loadeddata', start, {once:true});
+  start();
 });
-
 document.getElementById('year').textContent = new Date().getFullYear();
