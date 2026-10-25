@@ -1,46 +1,40 @@
-const menuBtn = document.querySelector('.menu-btn');
-const menu = document.querySelector('.mobile-menu');
-const nav = document.querySelector('.nav');
-
-menuBtn?.addEventListener('click', () => {
-  const open = !menu.classList.contains('open');
-  menu.classList.toggle('open', open);
-  document.body.classList.toggle('menu-open', open);
-  menuBtn.setAttribute('aria-expanded', String(open));
-  menu.setAttribute('aria-hidden', String(!open));
-});
-
-document.querySelectorAll('.mobile-menu a').forEach(a => a.addEventListener('click', () => {
-  menu.classList.remove('open');
-  document.body.classList.remove('menu-open');
-  menuBtn?.setAttribute('aria-expanded', 'false');
-  menu?.setAttribute('aria-hidden', 'true');
-}));
-
-const io = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
+const revealEls = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
     if (entry.isIntersecting) {
       entry.target.classList.add('visible');
-      io.unobserve(entry.target);
+      observer.unobserve(entry.target);
     }
   });
-}, { threshold: 0.12 });
+}, { threshold: 0.12, rootMargin: '0px 0px -5% 0px' });
+revealEls.forEach((el) => observer.observe(el));
 
-document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+const menuBtn = document.querySelector('.menu-btn');
+const mobileMenu = document.querySelector('.mobile-menu');
+const closeMenu = () => {
+  mobileMenu?.classList.remove('open');
+  mobileMenu?.setAttribute('aria-hidden', 'true');
+  menuBtn?.setAttribute('aria-expanded', 'false');
+  document.body.classList.remove('menu-open');
+};
+menuBtn?.addEventListener('click', () => {
+  const open = !mobileMenu.classList.contains('open');
+  mobileMenu.classList.toggle('open', open);
+  mobileMenu.setAttribute('aria-hidden', String(!open));
+  menuBtn.setAttribute('aria-expanded', String(open));
+  document.body.classList.toggle('menu-open', open);
+});
+mobileMenu?.querySelectorAll('a').forEach((link) => link.addEventListener('click', closeMenu));
 
-document.querySelectorAll('video').forEach(video => {
+document.querySelectorAll('video').forEach((video) => {
   video.muted = true;
   video.defaultMuted = true;
-  video.playsInline = true;
-  const ensurePlay = () => video.play().catch(() => {});
-  video.addEventListener('canplay', ensurePlay, { once: true });
-  ensurePlay();
+  video.volume = 0;
+  video.setAttribute('muted', '');
+  video.setAttribute('playsinline', '');
+  video.addEventListener('loadedmetadata', () => {
+    if (video.paused) video.play().catch(() => {});
+  }, { once: true });
 });
 
 document.getElementById('year').textContent = new Date().getFullYear();
-
-window.addEventListener('scroll', () => {
-  if (!nav) return;
-  nav.style.background = window.scrollY > 40 ? 'rgba(245,240,234,.92)' : 'transparent';
-  nav.style.backdropFilter = window.scrollY > 40 ? 'blur(14px)' : 'none';
-});
